@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 library(tidyverse)
 library(here)
 library(janitor)
+library(kableExtra)
 ```
 
 # Read in Urchins Data 
@@ -37,5 +38,22 @@ ggplot(data = urchins,
 ```
 
 ## Descriptive Data Table
+Create a finalized summary table that contains the following statistics for purple and red urchins (still ignoring site as a variable, but including species as a grouping variable): mean, median, standard deviation, and sample size. Use kableExtra (or another package for tables in R) to finalize your table for your knitted document. Add a table caption above your table. 
 
+```{r}
+urchins_summary<- urchins %>% 
+  group_by(common_name) %>% 
+  summarize (mean_size = mean(size),
+             median_size = median(size),
+             sd_size = sd(size),
+             n = n()) %>% 
+  kable(col.names = c("Species",
+                      "Mean Size",
+                      "Median Size",
+                      "Standard Deviation Size",
+                      "Sample Size")) %>% 
+  kable_styling(full_width = FALSE)
+
+urchins_summary
+```
 
