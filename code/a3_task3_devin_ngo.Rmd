@@ -1,0 +1,41 @@
+---
+title: "a3_task3_devin_ngo"
+author: "Devin Ngo"
+date: "10/25/2021"
+output: html_document
+---
+
+# Setup
+```{r setup, include=TRUE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+# Read in Urchins Data 
+
+```{r}
+# Read in Data
+urchins <- read_csv(here("data", "urchins.csv")) %>% 
+  clean_names()
+```
+
+# Section 1: Size Comparisons of Purple and Red Urchins
+
+## Data Visualization 
+
+```{r}
+ggplot(data = urchins,
+       aes(x = size)) +
+  geom_histogram(bins = 10, fill = "sienna2", color = "black") +
+  facet_wrap(~common_name) +
+  labs(x = "Size",
+       y = "Count",
+       title = "Purple and Red Urchin Size Count")
+```
+
+## Descriptive Data Table
+
+
