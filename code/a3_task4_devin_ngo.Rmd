@@ -1,0 +1,78 @@
+---
+title: "Naples Reef Purple Urchins (2010)"
+author: "Devin Ngo"
+date: "10/25/2021"
+output: html_document
+---
+# Introduction
+
+This data explores the size frequency distribution of red and purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at long-term kelp removal experiment sites. For this report, we will specifically be looking at data for purple urchins in the Naples Reef in 2010. 
+
+**Data Citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b. 
+
+# Setup
+```{r setup, include=TRUE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+# Attach Packages
+library(tidyverse)
+library(here)
+library(janitor)
+library(kableExtra)
+library(lubridate)
+```
+
+# Read in Urchins Data
+```{r}
+# Read in data 
+
+urchins <- read_csv(here("data", "urchins.csv")) %>% 
+  clean_names()
+```
+
+# Wrangling Data 
+Wrangling the urchins data to only include Naples Reef observations for purple urchins observed in 2010. 
+```{r}
+purple_urchins_2010 <- urchins %>% 
+  filter(common_name %in% c("Purple Urchin")) %>% 
+  mutate(date_class = mdy(date)) %>% 
+  mutate(year = year(date_class)) %>% 
+  filter(year %in% c("2010")) %>% 
+  filter(site %in% c("NAPL"))
+```
+
+# Data Visualization 
+Exploratory faceted histogram for the size distribution of purple urchins at Naples in 2010, separated by treatment (Control and Annual), to assess normality.
+```{r}
+ggplot(data = purple_urchins_2010, 
+       aes(x = size)) + 
+  geom_histogram(aes(bins = 12, fill = treatment)) +
+  facet_wrap(~treatment)
+```
+
+Exploratory QQ-plots for the size distribution of purple urchins at Naples in 2010, separated by treatment (Control and Annual), to assess normality.
+```{r}
+ggplot(data = purple_urchins_2010) + 
+  geom_qq(aes(sample = size, color = treatment)) +
+  facet_wrap(~treatment)
+```
+
+
+```{r}
+purple_urchins_summary <- purple_urchins_2010 %>% 
+  group_by(treatment) %>% 
+  summarize (mean_size = round(mean(size),3),
+             median_size = round(median(size),3),
+             sd_size = round(sd(size),3),
+             n = n()) %>% 
+  kable(col.names = c("Treatment",
+                      "Mean Size",
+                      "Median Size",
+                      "Standard Deviation of Size",
+                      "Sample Size (n)")) %>% 
+  kable_styling(full_width = FALSE)
+
+purple_urchins_summary
+```
+
+
