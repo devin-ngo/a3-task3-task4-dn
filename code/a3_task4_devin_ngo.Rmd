@@ -25,9 +25,14 @@ library(lubridate)
 # Read in Urchins Data
 ```{r}
 # Read in data 
-
 urchins <- read_csv(here("data", "urchins.csv")) %>% 
   clean_names()
+```
+
+For reference, the first 6 lines of the data set are shown below:
+```{r}
+# Return the first 6 lines
+head(urchins)
 ```
 
 # Wrangling Data 
@@ -46,18 +51,32 @@ Exploratory faceted histogram for the size distribution of purple urchins at Nap
 ```{r}
 ggplot(data = purple_urchins_2010, 
        aes(x = size)) + 
-  geom_histogram(aes(bins = 12, fill = treatment)) +
-  facet_wrap(~treatment)
+  geom_histogram(aes(fill = treatment)) +
+  facet_wrap(~treatment) +
+  labs(x = "Size (cm)",
+       y = "Count",
+       title = "Purple Urchin Size Distribution in Naples Reef (2010)",
+       fill = "Treatment",
+       caption = "Data Source: Reed, D. SBC LTER")
 ```
 
 Exploratory QQ-plots for the size distribution of purple urchins at Naples in 2010, separated by treatment (Control and Annual), to assess normality.
+
 ```{r}
 ggplot(data = purple_urchins_2010) + 
   geom_qq(aes(sample = size, color = treatment)) +
-  facet_wrap(~treatment)
+  facet_wrap(~treatment) +
+  labs(x = "Sample",
+       y = "Theoretical",
+       title = "Purple Urchin Size Distribution in Naples Reef (2010)",
+       color = "Treatment",
+       caption = "Data Source: Reed, D. SBC LTER")
 ```
 
+**Takeaways:** For both the annual and control treatments, the purple urchins seem to be normally distributed with a slight positive skew when looking at the histogram. When looking at the QQ-plot, both treatments seem fairly linear, which indicates a normal distribution.  
 
+# Descriptive Data Table
+Creating a finalized basic summary table of descriptive statistics for both groups, including the mean, standard deviation, and sample size by treatment. 
 ```{r}
 purple_urchins_summary <- purple_urchins_2010 %>% 
   group_by(treatment) %>% 
@@ -72,7 +91,12 @@ purple_urchins_summary <- purple_urchins_2010 %>%
                       "Sample Size (n)")) %>% 
   kable_styling(full_width = FALSE)
 
+# Included echo=FALSE in the next code chunk so the caption would appear above the following table
+```
+
+***Figure 3. Summary table for purple urchins in the Naples Reef in 2010.** This data separates the purple urchins by treatment (Annual and Control) and includes their mean, standard deviation, and sample size* 
+```{r, echo = FALSE}
 purple_urchins_summary
 ```
 
-
+# END TASK
