@@ -55,7 +55,8 @@ ggplot(data = urchins,
        y = "Count",
        title = "Purple and Red Urchin Size Count",
        caption = "Data Source: Reed, D. SBC LTER",
-       fill = "Common Name")
+       fill = "Common Name") +
+  theme_gray()
 ```
 
 ***Figure 1. Purple and Red Sea Urchin Size Distribution.** Totaling the counts of purple and red urchins by size. Sizes were taken from the urchin diameter (cm), measured to the nearest 0.5 cm.*
@@ -67,9 +68,9 @@ Creating a finalized summary table that contains the following statistics for pu
 ```{r}
 urchins_summary <- urchins %>% 
   group_by(common_name) %>% 
-  summarize (mean_size = round(mean(size),4),
-             median_size = round(median(size),4),
-             sd_size = round(sd(size),4),
+  summarize (mean_size = round(mean(size),3),
+             median_size = round(median(size),3),
+             sd_size = round(sd(size),3),
              n = n()) %>% 
   kable(col.names = c("Species",
                       "Mean Size (cm)",
@@ -83,7 +84,7 @@ urchins_summary
 
 ***Figure 2. Purple and Red Sea Urchin Size Statistics Summary Table.** This table includes the mean, median, standard deviation, and sample sizes of purple and red sea urchins.*
 
-Takeaways: Based on the graph and table above, the red urchin seems to display a normal distribution while the purple urchin seems to possibly be skewed in the positive direction. The red sea urchin has a much larger mean and median size, while also having a larger standard deviation. The difference between the two means is 2.307, giving a percent difference of \~41%, which is large.
+**Takeaways:** Based on the graph and table above, the red urchin seems to display a normal distribution while the purple urchin also seems to be a normal distribution, but possibly skewed in the positive direction. The red sea urchin has a much larger mean and median size, while also having a larger standard deviation, so its results are more spread apart. The difference between the two means is 2.306, giving a percent difference of \~41%, which is large.
 
 # Section 2: Explore Purple Urchin Counts by Site and Year
 
@@ -126,13 +127,13 @@ ggplot(data = purple_urchins_summary,
        y = "Total Number of Purple Urchins",
        title = "Total Number of Purple Urchins by Year and Site",
        color = "Site",
-       caption = "Data Source: Reed, D. SBC LTER")
+       caption = "Data Source: Reed, D. SBC LTER") +
+  scale_x_continuous(breaks = seq(2008, 2020, 2)) +
+  theme_minimal()
 ```
 
 ***Figure 3. Purple Urchin Count by Year and Site.** This table includes the mean, median, standard deviation, and sample sizes of purple and red sea urchins.*
 
-This line graph reflects changes in the purple urchin population at different reefs where there has been a decline over the years, including a sharp decline from 2011 to 2013 and from 2019 to 2020. To determine whether the changes in counts by year are reflective of actual changes,
-
-Add text below your graph: do you think this graph reflects changes in the purple urchin population? What would you have to take into account to determine whether the changes in counts by year are reflective of actual changes in urchin population? What else could explain the changes in number of purple urchins observed?
+**Takeaways:** This line graph reflects changes in the purple urchin population at different reefs where there has been a decline over the years, including a sharp decline from 2011 to 2013 and from 2019 to 2020. To determine whether the changes in counts by year are reflective of actual changes, there needs to be a control and experimental group for the samples. This will help identify whether the kelp removal has an effect on urchin population decline. 
 
 # END TASK

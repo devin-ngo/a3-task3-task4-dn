@@ -57,7 +57,8 @@ ggplot(data = purple_urchins_2010,
        y = "Count",
        title = "Purple Urchin Size Distribution in Naples Reef (2010)",
        fill = "Treatment",
-       caption = "Data Source: Reed, D. SBC LTER")
+       caption = "Data Source: Reed, D. SBC LTER") +
+  theme_light()
 ```
 
 Exploratory QQ-plots for the size distribution of purple urchins at Naples in 2010, separated by treatment (Control and Annual), to assess normality.
@@ -70,7 +71,8 @@ ggplot(data = purple_urchins_2010) +
        y = "Theoretical",
        title = "Purple Urchin Size Distribution in Naples Reef (2010)",
        color = "Treatment",
-       caption = "Data Source: Reed, D. SBC LTER")
+       caption = "Data Source: Reed, D. SBC LTER") +
+  theme_light()
 ```
 
 **Takeaways:** For both the annual and control treatments, the purple urchins seem to be normally distributed with a slight positive skew when looking at the histogram. When looking at the QQ-plot, both treatments seem fairly linear, which indicates a normal distribution.  
@@ -85,16 +87,16 @@ purple_urchins_summary <- purple_urchins_2010 %>%
              sd_size = round(sd(size),3),
              n = n()) %>% 
   kable(col.names = c("Treatment",
-                      "Mean Size",
-                      "Median Size",
-                      "Standard Deviation of Size",
+                      "Mean Size (cm)",
+                      "Median Size (cm)",
+                      "Standard Deviation of Size (cm)",
                       "Sample Size (n)")) %>% 
   kable_styling(full_width = FALSE)
 
 # Included echo=FALSE in the next code chunk so the caption would appear above the following table
 ```
 
-***Figure 3. Summary table for purple urchins in the Naples Reef in 2010.** This data separates the purple urchins by treatment (Annual and Control) and includes their mean, standard deviation, and sample size* 
+***Figure 3. Summary table for purple urchins in the Naples Reef in 2010.** This data separates the purple urchins by treatment (Annual and Control) and includes their mean, standard deviation, and sample size.* 
 ```{r, echo = FALSE}
 purple_urchins_summary
 ```
