@@ -1,21 +1,30 @@
 ---
-title: "a3_task3_devin_ngo"
+title: "Santa Barbara Urchins"
 author: "Devin Ngo"
 date: "10/25/2021"
 output: html_document
 ---
 
+# Introduction
+
+This data explores the size frequency distribution of red and purple sea urchins recorded by Santa Barbara Coastal Long Term Ecological Research program divers at long-term kelp removal experiment sites. The kelp removal experiment started in 2008 at selected reef sites along the Santa Barbara Channel mainland coast.
+
+**Data Citation:** Reed, D. 2020. SBC LTER: Reef: Long-term experiment: Kelp removal: Urchin size frequency distribution ver 20. Environmental Data Initiative. <https://doi.org/10.6073/pasta/5a1e9ef03aa47bd2225c0bb98a02a63b>.
+
 # Setup
+
 ```{r setup, include=TRUE, message = FALSE, warning = FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
+# Attach Packages
 library(tidyverse)
 library(here)
 library(janitor)
 library(kableExtra)
+library(lubridate)
 ```
 
-# Read in Urchins Data 
+# Read in Urchins Data
 
 ```{r}
 # Read in Data
@@ -23,37 +32,107 @@ urchins <- read_csv(here("data", "urchins.csv")) %>%
   clean_names()
 ```
 
+For reference, the first 6 lines of the data set are shown below:
+
+```{r}
+# Return the first 6 lines
+head(urchins)
+```
+
 # Section 1: Size Comparisons of Purple and Red Urchins
 
-## Data Visualization 
+## Data Visualization
+
+Comparing the distribution of sizes between purple and red urchins with a finalized, faceted histogram.
 
 ```{r}
 ggplot(data = urchins,
        aes(x = size)) +
-  geom_histogram(bins = 10, fill = "sienna2", color = "black") +
+  geom_histogram(bins = 12, aes(fill = common_name), color = "black") +
   facet_wrap(~common_name) +
-  labs(x = "Size",
+  scale_fill_manual(values = c("purple", "red")) +
+  labs(x = "Size (cm)",
        y = "Count",
-       title = "Purple and Red Urchin Size Count")
+       title = "Purple and Red Urchin Size Count",
+       caption = "Data Source: Reed, D. SBC LTER",
+       fill = "Common Name")
 ```
 
+***Figure 1. Purple and Red Sea Urchin Size Distribution.** Totaling the counts of purple and red urchins by size. Sizes were taken from the urchin diameter (cm), measured to the nearest 0.5 cm.*
+
 ## Descriptive Data Table
-Create a finalized summary table that contains the following statistics for purple and red urchins (still ignoring site as a variable, but including species as a grouping variable): mean, median, standard deviation, and sample size. Use kableExtra (or another package for tables in R) to finalize your table for your knitted document. Add a table caption above your table. 
+
+Creating a finalized summary table that contains the following statistics for purple and red urchins: mean, median, standard deviation, and sample size.
 
 ```{r}
-urchins_summary<- urchins %>% 
+urchins_summary <- urchins %>% 
   group_by(common_name) %>% 
-  summarize (mean_size = mean(size),
-             median_size = median(size),
-             sd_size = sd(size),
+  summarize (mean_size = round(mean(size),4),
+             median_size = round(median(size),4),
+             sd_size = round(sd(size),4),
              n = n()) %>% 
   kable(col.names = c("Species",
-                      "Mean Size",
-                      "Median Size",
-                      "Standard Deviation Size",
-                      "Sample Size")) %>% 
+                      "Mean Size (cm)",
+                      "Median Size (cm)",
+                      "Standard Deviation of Size (cm)",
+                      "Sample Size (n)")) %>% 
   kable_styling(full_width = FALSE)
 
 urchins_summary
 ```
 
+***Figure 2. Purple and Red Sea Urchin Size Statistics Summary Table.** This table includes the mean, median, standard deviation, and sample sizes of purple and red sea urchins.*
+
+Takeaways: Based on the graph and table above, the red urchin seems to display a normal distribution while the purple urchin seems to possibly be skewed in the positive direction. The red sea urchin has a much larger mean and median size, while also having a larger standard deviation. The difference between the two means is 2.307, giving a percent difference of \~41%, which is large.
+
+# Section 2: Explore Purple Urchin Counts by Site and Year
+
+## Data Wrangling
+
+Creating a subset of the urchins data
+
+```{r}
+# In a piped sequence, creating a stored subset of the urchins data called purple_urchins in which it is: filtered to only include observations for purple urchins, converted the date to class “Date”, created a new column that only contains the year, and created a new column called site_full that contains the full name for each of the five sites.  
+
+purple_urchins <- urchins %>% 
+  filter(common_name %in% c("Purple Urchin")) %>% 
+  mutate(date_class = mdy(date)) %>% 
+  mutate(year = year(date_class)) %>% 
+  mutate(site_full = case_when( 
+    site == "NAPL" ~ "Naples Reef",
+    site == "AQUE" ~ "Arroyo Quemado Reef",
+    site == "CARP" ~ "Carpinteria Reef",
+    site == "MOHK" ~ "Mohawk Reef",
+    site == "IVEE" ~ "Isla Vista Reef"))
+```
+
+```{r}
+# Writing code to store a table containing the total number of purple urchins observed by site and year.
+
+purple_urchins_summary <- purple_urchins %>% 
+  count(site_full, year)
+```
+
+## Data Visualization
+
+Making a finalized graph of counts of purple urchins recorded at each site over time for the years included in the study.
+
+```{r}
+ggplot(data = purple_urchins_summary, 
+       aes(x = year, 
+           y = n)) + 
+  geom_line(aes(color = site_full)) +
+  labs(x = "Year",
+       y = "Total Number of Purple Urchins",
+       title = "Total Number of Purple Urchins by Year and Site",
+       color = "Site",
+       caption = "Data Source: Reed, D. SBC LTER")
+```
+
+***Figure 3. Purple Urchin Count by Year and Site.** This table includes the mean, median, standard deviation, and sample sizes of purple and red sea urchins.*
+
+This line graph reflects changes in the purple urchin population at different reefs where there has been a decline over the years, including a sharp decline from 2011 to 2013 and from 2019 to 2020. To determine whether the changes in counts by year are reflective of actual changes,
+
+Add text below your graph: do you think this graph reflects changes in the purple urchin population? What would you have to take into account to determine whether the changes in counts by year are reflective of actual changes in urchin population? What else could explain the changes in number of purple urchins observed?
+
+# END TASK
